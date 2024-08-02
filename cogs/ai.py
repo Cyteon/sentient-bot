@@ -181,12 +181,6 @@ class Ai(commands.Cog, name="🤖 AI"):
         if self.ai_temp_disabled:
             return
 
-        if not self.bot.user in message.mentions:
-            willReply = random.randint(0, 1) # change for less replies
-
-            if willReply == 0:
-                return
-
         client = Groq(api_key=get_api_key())
 
         c = db["users"]
@@ -205,6 +199,12 @@ class Ai(commands.Cog, name="🤖 AI"):
 
             data = json.loads(data_str)
 
+            if not "action" in data:
+                if "message" in data:
+                    if data["message"] == "":
+                        return
+
+                    return await message.reply(data["message"])
 
             if data["action"] == "message" and data["message"] != "":
                 if data["skip"]:

@@ -1,5 +1,5 @@
 # Sentient
-> making this later
+> Kinda scuffed bot rn
 
 ## Run Locally
 
