@@ -1,22 +1,18 @@
-# PotatoBot
-> The best AIO bot on discord
-
-Top.GG: https://top.gg/bot/1226487228914602005 \
-Invite: https://discord.com/oauth2/authorize?client_id=1226487228914602005
-
+# Sentient
+> making this later
 
 ## Run Locally
 
 1. Clone the project
 
 ```bash
-  git clone https://github.com/Cyteon/potatobot
+  git clone https://github.com/Cyteon/sentient-bot
 ```
 
 2. Go to the project directory
 
 ```bash
-  cd potatobot
+  cd sentient-bot
 ```
 
 3. Install python dependencies
