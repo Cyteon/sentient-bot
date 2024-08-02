@@ -1,0 +1,6 @@
+aiohttp
+discord.py
+groq
+pymongo
+python-dotenv
+redis
