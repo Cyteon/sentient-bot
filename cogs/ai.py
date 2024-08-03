@@ -210,10 +210,10 @@ class Ai(commands.Cog, name="🤖 AI"):
                 if data["skip"]:
                     return
 
-                if data["reply_or_send"] == True:
-                    await message.reply(data["message"])
-                else:
+                if data["reply_or_send"] == False:
                     await message.channel.send(data["message"])
+                else:
+                    await message.reply(data["message"])
 
                 logger.info(f"AI replied to {message.author} in {message.guild.name} ({message.guild.id})")
 
@@ -238,6 +238,17 @@ class Ai(commands.Cog, name="🤖 AI"):
             await context.send("AI is now disabled globally")
         else:
             await context.send("AI is now enabled globally")
+
+    @commands.hybrid_command(
+        name="reset",
+        description="Reset AI",
+    )
+    async def reset(self, context: Context) -> None:
+        c = db["ai_convos"]
+
+        c.delete_one({ "isChannel": True, "id": context.channel.id })
+
+        await context.send("AI has been reset in this channel")
 
 async def setup(bot) -> None:
     await bot.add_cog(Ai(bot))

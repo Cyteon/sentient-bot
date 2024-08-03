@@ -194,10 +194,6 @@ class DiscordBot(commands.AutoShardedBot):
                 f"Executed {executed_command} command by {context.author} (ID: {context.author.id}) in DMs"
             )
 
-        commands_ran = (statsDB.get("commands_ran") if statsDB.exists("commands_ran") else 0) + 1
-        statsDB.set("commands_ran", commands_ran)
-        statsDB.dump()
-
     async def on_command_error(self, context: commands.Context, error) -> None:
         if isinstance(error, commands.CommandOnCooldown):
             minutes, seconds = divmod(error.retry_after, 60)
