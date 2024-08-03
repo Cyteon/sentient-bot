@@ -199,6 +199,11 @@ class Ai(commands.Cog, name="🤖 AI"):
 
             data = json.loads(data_str)
 
+            logger.info(data)
+
+            if data["skip"]:
+                return
+
             if not "action" in data:
                 if "message" in data:
                     if data["message"] == "":
@@ -207,9 +212,6 @@ class Ai(commands.Cog, name="🤖 AI"):
                     return await message.reply(data["message"])
 
             if data["action"] == "message" and data["message"] != "":
-                if data["skip"]:
-                    return
-
                 if data["reply_or_send"] == False:
                     await message.channel.send(data["message"])
                 else:
