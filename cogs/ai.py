@@ -28,7 +28,7 @@ from discord.ext.commands import Context
 from utils import CONSTANTS, DBClient, CachedDB
 
 client = DBClient.client
-db = client.potatobot
+db = client.sentient
 
 logger = logging.getLogger("discord_bot")
 
@@ -83,11 +83,14 @@ def get_api_key():
 
 systemPrompt="""
 You are the user with the id 1268929435457818717.
-If someone talks to someone else dont always say stuff, dont always reply to message, sometimes have reply_or_send to false.
+If someone talks to someone else dont always say stuff, dont always use reply for a message, sometimes have reply_or_send to false.
 Respond in JSON only, you are a discord user, and need to act like one, if you dont wanna respond set skip to true,
-here is how to respond (reply_or_send will reply if true, just send msg if false, if you get a message that says 'random' then just come up with something discord user like to say):
+The delay between each message is 1sec
+here is how to respond (reply_or_send will make first message a reply if true, just send msg if false, if you get a message that says 'random' then just come up with something discord user like to say):
 you have to set action no matter what, always use unicode, convert discord emojis like :gift: to unicode always
-{'skip': bool, 'message': str, 'reply_or_send': bool, 'action': str, 'reaction': emoji (unicode)}
+{'skip': bool, 'messages': [str], 'reply_or_send': bool, 'action': str, 'reactions': [emoji (unicode)]}
+for just one message do messages: [your one message]
+do array of emojis
 Avaible actions: message, react
 """
 def prompt_ai(
@@ -135,7 +138,8 @@ def prompt_ai(
             ai_response = groq_client.chat.completions.create(
                 messages=newMessageArray,
                 model=model,
-                response_format={"type": "json_object"}
+                response_format={"type": "json_object"},
+                max_tokens=100,
             ).choices[0].message.content
 
             break
@@ -181,6 +185,9 @@ class Ai(commands.Cog, name="🤖 AI"):
         if self.ai_temp_disabled:
             return
 
+        if message.content.startswith("??") or message.content.startswith("-"):
+            return
+
         client = Groq(api_key=get_api_key())
 
         c = db["users"]
@@ -201,27 +208,43 @@ class Ai(commands.Cog, name="🤖 AI"):
 
             logger.info(data)
 
+            if "message" in data: # AI is stupid sometimes
+                data["messages"] = [data["message"]]
+
+            if "reaction" in data: # AI is stupid sometimes
+                if type(data["reaction"]) == list:
+                    data["reactions"] = data["reaction"]
+                else:
+                    data["reactions"] = [data["reaction"]]
+
             if data["skip"]:
                 return
 
             if not "action" in data:
-                if "message" in data:
-                    if data["message"] == "":
-                        return
+                return
 
-                    return await message.reply(data["message"])
+            if data["action"] == "message" and data["messages"] != []:
+                i = 0
+                for msg in data["messages"]:
+                    async with message.channel.typing():
+                        if i == 0:
+                            if data["reply_or_send"]:
+                                await message.reply(msg)
+                            else:
+                                await message.channel.send(msg)
+                        else:
+                            await message.channel.send(msg)
+                            await asyncio.sleep(1)
 
-            if data["action"] == "message" and data["message"] != "":
-                if data["reply_or_send"] == False:
-                    await message.channel.send(data["message"])
-                else:
-                    await message.reply(data["message"])
+                        i += 1
 
                 logger.info(f"AI replied to {message.author} in {message.guild.name} ({message.guild.id})")
 
-            if data["action"] == "react" and data["reaction"] != "":
-                logger.info(data["reaction"])
-                await message.add_reaction(data["reaction"])
+            if data["action"] == "react" and data["reactions"] != []:
+                logger.info(data["reactions"])
+                for reaction in data["reactions"]:
+
+                    await message.add_reaction(reaction)
 
                 logger.info(f"AI reacted to {message.author} in {message.guild.name} ({message.guild.id})")
         except Exception as e:

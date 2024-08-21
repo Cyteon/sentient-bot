@@ -132,7 +132,7 @@ class DiscordBot(commands.AutoShardedBot):
                 color=0xE02B2B
             )
 
-            await to_send.send(embed=embed, username="PotatoBot - Guild Logger")
+            await to_send.send(embed=embed, username="Sentient - Guild Logger")
 
         self.logger.info("Bot left guild " + guild.name)
 
@@ -146,7 +146,7 @@ class DiscordBot(commands.AutoShardedBot):
                 color=0x57F287
             )
 
-            await to_send.send(embed=embed, username="PotatoBot - Guild Logger")
+            await to_send.send(embed=embed, username="Sentient - Guild Logger")
 
         self.logger.info("Bot joined guild: " + guild.name)
 
