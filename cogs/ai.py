@@ -46,9 +46,6 @@ models = [
     "gemma2-9b-it"
 ]
 
-api_key = os.getenv('FUSION_API_KEY')
-secret_key = os.getenv('FUSION_SECRET_KEY')
-
 ai_temp_disabled = False
 
 ai_channels = []
