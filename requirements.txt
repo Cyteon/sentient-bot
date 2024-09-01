@@ -4,3 +4,4 @@ groq
 pymongo
 python-dotenv
 redis
+requests
