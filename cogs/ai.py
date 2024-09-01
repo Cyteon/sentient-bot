@@ -228,8 +228,11 @@ class Ai(commands.Cog, name="🤖 AI"):
                 for msg in data["messages"]:
                     async with message.channel.typing():
                         if i == 0:
-                            if data["reply_or_send"]:
-                                await message.reply(msg)
+                            if "reply_or_send" in data:
+                                if data["reply_or_send"]:
+                                    await message.reply(msg)
+                                else:
+                                    await message.channel.send(msg)
                             else:
                                 await message.channel.send(msg)
                         else:
@@ -240,13 +243,14 @@ class Ai(commands.Cog, name="🤖 AI"):
 
                 logger.info(f"AI replied to {message.author} in {message.guild.name} ({message.guild.id})")
 
-            if data["action"] == "react" and data["reactions"] != []:
-                logger.info(data["reactions"])
+            if "reactions" in data:
+                data["reactions"] = data["reactions"][0:3]
                 for reaction in data["reactions"]:
+                    try:
+                        await message.add_reaction(reaction)
+                    except:
+                        pass
 
-                    await message.add_reaction(reaction)
-
-                logger.info(f"AI reacted to {message.author} in {message.guild.name} ({message.guild.id})")
         except Exception as e:
             err = f"An error in the AI has occured {e}"
             await message.reply(err)
