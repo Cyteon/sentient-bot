@@ -185,6 +185,11 @@ class Ai(commands.Cog, name="🤖 AI"):
         if message.content.startswith("??") or message.content.startswith("-"):
             return
 
+        if not self.bot.user in message.mentions:
+            if message.guild:
+                if not message.channel.id in ai_channels:
+                    return
+
         client = Groq(api_key=get_api_key())
 
         c = db["users"]
@@ -264,6 +269,42 @@ class Ai(commands.Cog, name="🤖 AI"):
             await context.send("AI is now disabled globally")
         else:
             await context.send("AI is now enabled globally")
+
+    @commands.command(
+        name="enable",
+        description="Enable AI in this channel",
+    )
+    @commands.has_permissions(manage_messages=True)
+    async def enable(self, context: Context) -> None:
+        c = db["ai_channels"]
+
+        if context.channel.id in ai_channels:
+            await context.send("AI is already enabled in this channel")
+            return
+
+        ai_channels.append(context.channel.id)
+
+        c.update_one({ "listOfChannels": True }, { "$set": { "channels": ai_channels } }, upsert=True)
+
+        await context.send("AI has been enabled in this channel")
+
+    @commands.command(
+        name="disable",
+        description="Disable AI in this channel",
+    )
+    @commands.has_permissions(manage_messages=True)
+    async def disable(self, context: Context) -> None:
+        c = db["ai_channels"]
+
+        if not context.channel.id in ai_channels:
+            await context.send("AI is already disabled in this channel")
+            return
+
+        ai_channels.remove(context.channel.id)
+
+        c.update_one({ "listOfChannels": True }, { "$set": { "channels": ai_channels } }, upsert=True)
+
+        await context.send("AI has been disabled in this channel")
 
     @commands.hybrid_command(
         name="reset",
