@@ -49,7 +49,7 @@ models = [
 ai_temp_disabled = False
 
 ai_channels = []
-c = db["channels"]
+c = db["ai_channels"]
 data = c.find_one({ })
 
 logger.info("Initing AI channels")
