@@ -51,16 +51,16 @@ ai_temp_disabled = False
 ai_channels = []
 c = db["channels"]
 data = c.find_one({ })
+
 logger.info("Initing AI channels")
 
 if data:
-    ai_channels = data["ai_channels"]
+    ai_channels = data["channels"]
     logger.info("AI Channels data Found")
 else:
     logger.info("Creating AI Channels data")
     data = {
-    	"listOfChannels": True,
-         "ai_channels": []
+        "channels": []
     }
     c.insert_one(data)
 
