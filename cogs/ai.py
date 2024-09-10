@@ -49,8 +49,8 @@ models = [
 ai_temp_disabled = False
 
 ai_channels = []
-c = db["ai_channels"]
-data = c.find_one({ "listOfChannels": True })
+c = db["channels"]
+data = c.find_one({ })
 logger.info("Initing AI channels")
 
 if data:
@@ -284,7 +284,7 @@ class Ai(commands.Cog, name="🤖 AI"):
 
         ai_channels.append(context.channel.id)
 
-        c.update_one({ "listOfChannels": True }, { "$set": { "channels": ai_channels } }, upsert=True)
+        c.update_one({ }, { "$set": { "channels": ai_channels } }, upsert=True)
 
         await context.send("AI has been enabled in this channel")
 
@@ -302,7 +302,7 @@ class Ai(commands.Cog, name="🤖 AI"):
 
         ai_channels.remove(context.channel.id)
 
-        c.update_one({ "listOfChannels": True }, { "$set": { "channels": ai_channels } }, upsert=True)
+        c.update_one({ }, { "$set": { "channels": ai_channels } }, upsert=True)
 
         await context.send("AI has been disabled in this channel")
 
